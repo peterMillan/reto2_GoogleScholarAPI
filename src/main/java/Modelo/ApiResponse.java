@@ -14,11 +14,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class ApiResponse {
-    public List<String> consultarSerpApi(String query, String apiKey)
+    public List<AuthorInfo> consultarSerpApi(String query, String apiKey)
             throws IOException, InterruptedException, URISyntaxException {
         String queryEncoded = URLEncoder.encode(query, "UTF-8");
         // Construye la URL con los parámetros proporcionados
-        String url = "https://serpapi.com/search.json?engine=google_scholar&q=" + queryEncoded + "&api_key=" + apiKey;
+        String url = "https://serpapi.com/search.json?engine=google_scholar_profiles&mauthors=" + queryEncoded + "&api_key=" + apiKey;
 
         // Crea una instancia de HttpClient
         HttpClient client = HttpClient.newHttpClient();
@@ -35,23 +35,46 @@ public class ApiResponse {
         return procesarRespuesta(response.body());
     }
 
-    private List<String> procesarRespuesta(String jsonResponse) {
-        List<String> authors = new ArrayList<>();
-
-        // Analiza el JSON y extrae los autores
+    private List<AuthorInfo> procesarRespuesta(String jsonResponse) {
+        List<AuthorInfo> authorInfos = new ArrayList<>();
+    
+        // Analiza el JSON y extrae los autores con sus cited_by
         JSONObject json = new JSONObject(jsonResponse);
-        JSONArray organicResults = json.getJSONArray("organic_results");
-
-        for (int i = 0; i < organicResults.length(); i++) {
-            JSONObject result = organicResults.getJSONObject(i);
-            JSONArray authorsArray = result.getJSONObject("publication_info").getJSONArray("authors");
-
-            for (int j = 0; j < authorsArray.length(); j++) {
-                String authorName = authorsArray.getJSONObject(j).getString("name");
-                authors.add(authorName);
+        JSONArray profiles = json.getJSONArray("profiles");
+    
+        for (int i = 0; i < profiles.length(); i++) {
+            JSONObject profile = profiles.getJSONObject(i);
+            String authorName = profile.getString("name");
+            int citedBy = 0; // Valor predeterminado si "cited_by" es nulo
+    
+            if (!profile.isNull("cited_by")) {
+                citedBy = profile.getInt("cited_by");
             }
+    
+            AuthorInfo authorInfo = new AuthorInfo(authorName, citedBy);
+            authorInfos.add(authorInfo);
+        }
+    
+        return authorInfos;
+    }
+    
+
+    // Clase para representar la información de un autor
+    public class AuthorInfo {
+        private String name;
+        private int citedBy;
+
+        public AuthorInfo(String name, int citedBy) {
+            this.name = name;
+            this.citedBy = citedBy;
         }
 
-        return authors;
+        public String getName() {
+            return name;
+        }
+
+        public int getCitedBy() {
+            return citedBy;
+        }
     }
 }
