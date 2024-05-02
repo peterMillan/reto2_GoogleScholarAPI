@@ -45,13 +45,14 @@ public class ApiResponse {
         for (int i = 0; i < profiles.length(); i++) {
             JSONObject profile = profiles.getJSONObject(i);
             String authorName = profile.getString("name");
+            String authorId = profile.getString("author_id"); // Obtenemos el id del autor del JSON
             int citedBy = 0; // Valor predeterminado si "cited_by" es nulo
     
             if (!profile.isNull("cited_by")) {
                 citedBy = profile.getInt("cited_by");
             }
     
-            AuthorInfo authorInfo = new AuthorInfo(authorName, citedBy);
+            AuthorInfo authorInfo = new AuthorInfo(authorId, authorName, citedBy); // Pasamos el id del autor
             authorInfos.add(authorInfo);
         }
     
@@ -61,14 +62,20 @@ public class ApiResponse {
 
     // Clase para representar la información de un autor
     public class AuthorInfo {
+        private String idAuthor; 
         private String name;
         private int citedBy;
 
-        public AuthorInfo(String name, int citedBy) {
+        public AuthorInfo(String idAuthor, String name, int citedBy) {
+            this.idAuthor = idAuthor;
             this.name = name;
             this.citedBy = citedBy;
         }
 
+        public String getIdAuthor() {
+            return idAuthor;
+        }
+        
         public String getName() {
             return name;
         }

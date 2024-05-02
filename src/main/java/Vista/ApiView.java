@@ -1,20 +1,21 @@
 package Vista;
 
 import java.util.List;
-import java.util.Map;
+
+
+import Modelo.ApiResponse;
 
 public class ApiView {
-    public void mostrarAutores(List<String> autores) {
-        System.out.println("Autores encontrados:");
-        for (String autor : autores) {
+ public void mostrarAutores(List<ApiResponse.AuthorInfo> autoresAnteriores, List<String> autoresActuales) {
+        System.out.println("\n-->Autores anteriores:");
+        for (ApiResponse.AuthorInfo autor : autoresAnteriores) {
+            System.out.println(autor.getName());
+        }
+        
+        System.out.println("\n-->Autores actuales:");
+        for (String autor : autoresActuales) {
             System.out.println(autor);
         }
     }
 
-    public void mostrarTopAutores(List<String> topAutores, Map<String, Integer> conteoArticulos) {
-        System.out.println("\nTop 10 Autores con más artículos:");
-        for (String autor : topAutores) {
-            System.out.println(autor + ": " + conteoArticulos.get(autor));
-        }
-    }
 }

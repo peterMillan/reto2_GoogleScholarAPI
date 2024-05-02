@@ -14,18 +14,24 @@ public class Main {
         String query = "Universidad del Norte";
         String apiKey = "4f72ce14f0467b7efe3ec8648c5c854328331bd6af1119a9be68c6b40df39380";
 
-        List<ApiResponse.AuthorInfo> autores = apiController.obtenerAutores(query, apiKey);
-        if (autores != null) {
+        // Obtener autores anteriores de la base de datos
+        List<ApiResponse.AuthorInfo> autoresAnteriores = apiController.obtenerAutoresBD();
+
+        // Obtener autores actuales de la API
+        List<ApiResponse.AuthorInfo> autoresActuales = apiController.obtenerAutores(query, apiKey);
+
+        if (autoresActuales != null) {
             // Crear una lista de cadenas que contenga el nombre del autor y el número de
-            // "cited_by"
+            // "cited_by" para los autores actuales
             List<String> nombresYCitedBy = new ArrayList<>();
-            for (ApiResponse.AuthorInfo autor : autores) {
-                String nombreYCitedBy = autor.getName() + " - Cited by: " + autor.getCitedBy();
+            for (ApiResponse.AuthorInfo autor : autoresActuales) {
+                String nombreYCitedBy = autor.getIdAuthor()+">>"+autor.getName() + " - Cited by: " + autor.getCitedBy();
                 nombresYCitedBy.add(nombreYCitedBy);
             }
-            mainView.mostrarAutores(nombresYCitedBy);
+            // Mostrar autores anteriores y actuales en la vista
+            mainView.mostrarAutores(autoresAnteriores, nombresYCitedBy);
         } else {
-            System.out.println("No se pudieron obtener los autores.");
+            System.out.println("No se pudieron obtener los autores actuales.");
         }
 
     }
