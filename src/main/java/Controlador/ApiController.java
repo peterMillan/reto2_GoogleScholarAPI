@@ -1,6 +1,7 @@
 package Controlador;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +16,13 @@ public class ApiController {
         this.apiResponse = new ApiResponse();
     }
 
-    public List<String> obtenerAutores(String query, String apiKey) throws IOException {
-        return apiResponse.consultarSerpApi(query, apiKey);
+    public List<String> obtenerAutores(String query, String apiKey) {
+        try {
+            return apiResponse.consultarSerpApi(query, apiKey);
+        } catch (IOException | InterruptedException | URISyntaxException e) {
+            e.printStackTrace();
+            return null; // Otra acción que desees tomar en caso de error
+        }
     }
 
     public Map<String, Integer> contarArticulosPorAutor(List<String> autores) {
@@ -38,5 +44,4 @@ public class ApiController {
                 .collect(Collectors.toList());
     }
 
-    
 }
